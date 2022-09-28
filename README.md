@@ -43,7 +43,7 @@ Also install and set up:
 ```ts
 // ./e2e/environment.js
 
-const DetoxHelpers = require(')
+const DetoxHelpers = require('@colorfy-software/detoxify')
 const { DetoxCircusEnvironment, SpecReporter, WorkerAssignReporter } = require('detox/runners/jest-circus')
 
 class CustomDetoxEnvironment extends DetoxCircusEnvironment {
