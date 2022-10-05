@@ -52,10 +52,7 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
 
     // 👇👇👇
     DetoxHelpers.init({
-      translations: {
-        en: require('../src/locales/en.ts'),
-        de: require('../src/locales/de.ts'),
-      },
+      translations: require('../src/locales/en.ts'),
       // optional
       // runOnly: []
     })

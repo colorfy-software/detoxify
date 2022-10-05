@@ -4,21 +4,17 @@ import { device, expect } from 'detox'
 import { describe as describeFn } from '@jest/globals'
 
 let RUN_ONLY: string[] = []
-let translations: object = { en: {} }
+let translations: Record<string, Record<string, string>> = {}
 
 /**
  * Initializes the library.
  * @param runOnly - `string[]`– Optional. Names of the test files to filter in and run, ie: `['home', 'settings']`.
- * @param translations - `{ [locale: string]: object }`– Object containing the languages and their translations.
+ * @param translations - `{ [context: string]: Record<string, string> }`– Object containing a language string and and its translations.
  * Defaults to `[]` which means running all test files.
  */
-function init<TranslationsType extends object>({
-  runOnly = [],
-  translations: translationsObj,
-}: {
-  runOnly?: string[]
-  translations?: TranslationsType
-}) {
+function init<
+  TranslationsType extends Record<string, Record<string, string>> = Record<string, Record<string, string>>,
+>({ runOnly = [], translations: translationsObj }: { runOnly?: string[]; translations?: TranslationsType }) {
   if (runOnly) RUN_ONLY = runOnly
   if (translationsObj) translations = translationsObj
 }
@@ -213,11 +209,17 @@ function sleepFor(milliseconds: number) {
  * @param { string } locale - The locale you want to get the string for.
  * @returns { string } The localized string.
  */
-const getLocalizedString = <Locale extends keyof typeof translations>(
-  locale: Locale,
-  fn: (strings: typeof translations[Locale]) => string | string[],
+const getLocalizedString = <
+  Translations extends Record<string, Record<string, string>>,
+  Context extends keyof Translations = keyof Translations,
+  Output extends Exclude<keyof Translations[Context], number | symbol> = Exclude<
+    keyof Translations[Context],
+    number | symbol
+  >,
+>(
+  fn: (strings: Translations) => string,
   values: Record<string, string> = {},
-): string => {
+): Output => {
   const parseStringForValues = (string: string) => {
     const regex = /\{\{([^}]+)\}\}/g
     const matches = string.match(regex)
@@ -236,7 +238,7 @@ const getLocalizedString = <Locale extends keyof typeof translations>(
     return string
   }
 
-  const item = fn(translations[locale])
+  const item = fn(translations as unknown as Translations)
   let variable = null
   let string = ''
 
@@ -249,7 +251,7 @@ const getLocalizedString = <Locale extends keyof typeof translations>(
 
   return parseStringForValues(string)
     .replace(/({{|@@)(.+?)(@@|}})/g, variable ?? '__NO VARIABLE ARGUMENT PROVIDED__')
-    .replace(/\*/g, '')
+    .replace(/\*/g, '') as unknown as Output
 }
 
 export default {
