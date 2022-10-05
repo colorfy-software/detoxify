@@ -1,6 +1,6 @@
 {
   "name": "@colorfy-software/detoxify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Useful helpers for E2E testing in React Native with Detox",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
